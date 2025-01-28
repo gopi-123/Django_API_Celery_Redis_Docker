@@ -1,3 +1,82 @@
+Context
+The assignment involves creating a web service that allows for the execution of scheduled tasks. The tasks are defined by a URL and a specific time to run. The core functionality includes setting a timer and firing a webhook when the timer expires. The service must handle invalid inputs, ensure the timers persist through restarts, support horizontal scalability, and ensure each timer is fired only once.
+
+Functional Requirements
+Set Timer Endpoint: Accepts a JSON object with hours, minutes, seconds, and a URL. It starts an internal timer and returns the time left and a timer ID.
+
+Get Timer Endpoint: Returns the time left for a given timer ID.
+
+Technical Requirements
+Handle invalid inputs and ensure robustness.
+
+Timers must persist through process restarts.
+
+Horizontal scalability to handle increasing numbers of timers.
+
+Fire each timer only once.
+
+Implemented in Python using Django, Django REST Framework, FastAPI, or Flask.
+
+Dockerize the application for easy deployment.
+
+Include sensible testing.
+
+Tech Stack
+Programming Language:
+
+Python
+
+Frameworks:
+
+Django + Django REST Framework (or Django Ninja)
+
+FastAPI
+
+Flask
+
+Containerization:
+
+Docker
+
+Testing:
+
+Unit tests (with libraries like pytest, unittest)
+
+Caching (Optional for Performance):
+
+Redis or similar caching solution (for horizontal scalability and persistence)
+
+Message Broker (For Asynchronous Tasks):
+
+Celery with Redis or RabbitMQ (if needed)
+
+Database (For Persistence):
+
+PostgreSQL or any other relational database supported by Django/FastAPI/Flask
+
+Implementation
+Endpoints:
+
+/timer (POST): Set a timer.
+
+/timer/{timer_uuid} (GET): Get the timer status.
+
+Docker:
+
+Use Docker to wrap the application and its dependencies.
+
+Provide a Dockerfile and docker-compose.yml for building and running the application.
+
+Readme:
+
+Include clear instructions on how to build, run, and test the application.
+
+Testing:
+
+Write tests to ensure the key functionalities work as expected.
+
+
+
 
 
 ## Files to read:  "README.md" ,  "Assignment_Documentation_Notes.docx" and "Technical_assignment_new.pdf"
