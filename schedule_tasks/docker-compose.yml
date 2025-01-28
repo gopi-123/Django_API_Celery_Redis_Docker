@@ -1,0 +1,82 @@
+services:
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=django_db
+      - POSTGRES_USER=django_user
+      - POSTGRES_PASSWORD=django_pass
+      - TZ=Europe/Amsterdam
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  web:
+    build: .
+    environment:
+      - TZ=Europe/Amsterdam
+    command: bash -c "python manage.py migrate && waitress-serve --port=8000 schedule_tasks.wsgi:application"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    deploy:
+      replicas: 1  # Number of web service replicas
+      update_config:
+        parallelism: 2
+        delay: 10s
+
+  celery:
+    build: .
+    environment:
+      - TZ=Europe/Amsterdam
+    command: celery -A schedule_tasks worker --loglevel=info
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - redis
+    deploy:
+      replicas: 3  # Number of celery worker replicas
+      update_config:
+        parallelism: 2
+        delay: 10s
+
+  celery-beat:
+    build: .
+    environment:
+      - TZ=Europe/Amsterdam
+    command: celery -A schedule_tasks beat --loglevel=info
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - db
+    deploy:
+      replicas: 1  # Typically only one instance of celery-beat
+      update_config:
+        parallelism: 1
+        delay: 10s
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  # Add a new service for running tests
+  tests:
+    build: .
+    environment:
+      - TZ=Europe/Amsterdam
+    command: bash -c "python manage.py test"
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - redis
+
+volumes:
+  postgres_data:
